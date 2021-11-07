@@ -81,7 +81,12 @@ def create_person(person: Person = Body(...)) -> Dict[str, any]:
 
 
 # Validations: Query Parameters
-@app.get(path="/person/detail", status_code=status.HTTP_200_OK, tags=["People"])
+@app.get(
+    path="/person/detail",
+    status_code=status.HTTP_200_OK,
+    tags=["People"],
+    deprecated=True,
+)
 def show_person(
     name: Optional[str] = Query(
         default=None,
