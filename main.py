@@ -63,8 +63,20 @@ def home() -> Dict[str, any]:
     response_model=PersonOut,
     status_code=status.HTTP_201_CREATED,
     tags=["People"],
+    summary="Create person in the app",
 )
 def create_person(person: Person = Body(...)) -> Dict[str, any]:
+    """
+    Create Person
+
+    This path operation creates a person in the app and save the information in the database
+
+    Parameters:
+    - Request body parameter:
+        - **person: Person** -> A person model with first name, last name, age, hair color and marital status
+
+    Returns a person model with first name, last name, age, hair color and marital status
+    """
     return person
 
 
