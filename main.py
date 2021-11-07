@@ -21,16 +21,23 @@ class HairColor(Enum):
     RED = "RED"
 
 
-class Person(BaseModel):
+class PersonBase(BaseModel):
     first_name: str = Field(..., min_length=1, max_length=50, example="Stiven")
     last_name: str = Field(..., min_length=1, max_length=50, example="Ramírez Arango")
     age: int = Field(..., gt=0, le=115, example=23)
     hair_color: Optional[HairColor] = Field(default=None, example="BLACK")
     is_married: Optional[bool] = Field(default=None, example=False)
-    password: str = Field(..., min_length=8)
 
 
-class Location(BaseModel):
+class Person(PersonBase):
+    password: str = Field(..., min_length=8, example="password")
+
+
+class PersonOut(PersonBase):
+    pass
+
+
+class Location(PersonBase):
     city: str = Field(..., min_length=1, max_length=50, example="Sabaneta")
     state: str = Field(..., min_length=1, max_length=50, example="Antioquia")
     country: str = Field(..., min_length=1, max_length=50, example="Colombia")
