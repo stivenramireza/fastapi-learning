@@ -4,10 +4,11 @@ from enum import Enum
 
 # Pydantic
 from pydantic import BaseModel, Field
+from pydantic import EmailStr
 
 # FastAPI
 from fastapi import FastAPI
-from fastapi import Body, Query, Path, Form
+from fastapi import Body, Query, Path, Form, Header, Cookie
 from fastapi import status
 
 
@@ -110,6 +111,20 @@ def update_person(
     return {**dict(person), **dict(location)}
 
 
+# Forms
 @app.post(path="/login", response_model=LoginOut, status_code=status.HTTP_200_OK)
 def login(username: str = Form(...), password: str = Form(...)) -> Dict[str, any]:
     return LoginOut(username=username)
+
+
+# Cookies and Headers Parameters
+@app.post(path="/contact", status_code=status.HTTP_200_OK)
+def contact(
+    first_name: str = Form(..., min_length=1, max_length=20),
+    last_name: str = Form(..., min_length=1, max_length=20),
+    email: EmailStr = Form(...),
+    message: str = Form(..., min_length=20),
+    user_agent: Optional[str] = Header(default=None),
+    ads: Optional[str] = Cookie(default=None),
+) -> Dict[str, any]:
+    return user_agent
