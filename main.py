@@ -52,21 +52,24 @@ class LoginOut(BaseModel):
     message: str = Field(default="Login successfully!")
 
 
-@app.get(path="/", status_code=status.HTTP_200_OK)
+@app.get(path="/", status_code=status.HTTP_200_OK, tags=["Home"])
 def home() -> Dict[str, any]:
     return {"Hello": "World"}
 
 
 # Request and Response Body
 @app.post(
-    path="/person/new", response_model=PersonOut, status_code=status.HTTP_201_CREATED
+    path="/person/new",
+    response_model=PersonOut,
+    status_code=status.HTTP_201_CREATED,
+    tags=["People"],
 )
 def create_person(person: Person = Body(...)) -> Dict[str, any]:
     return person
 
 
 # Validations: Query Parameters
-@app.get(path="/person/detail", status_code=status.HTTP_200_OK)
+@app.get(path="/person/detail", status_code=status.HTTP_200_OK, tags=["People"])
 def show_person(
     name: Optional[str] = Query(
         default=None,
@@ -89,7 +92,9 @@ def show_person(
 persons = [1, 2, 3, 4, 5]
 
 # Validations: Path Parameters
-@app.get(path="/person/detail/{person_id}", status_code=status.HTTP_200_OK)
+@app.get(
+    path="/person/detail/{person_id}", status_code=status.HTTP_200_OK, tags=["People"]
+)
 def show_person(
     person_id: int = Path(
         ...,
@@ -107,7 +112,9 @@ def show_person(
 
 
 # Validations: Request Body
-@app.put(path="/person/{person_id}", status_code=status.HTTP_204_NO_CONTENT)
+@app.put(
+    path="/person/{person_id}", status_code=status.HTTP_204_NO_CONTENT, tags=["People"]
+)
 def update_person(
     person_id: int = Path(
         ..., title="Person id", description="This is the person id", gt=0, example=123
@@ -119,13 +126,18 @@ def update_person(
 
 
 # Forms
-@app.post(path="/login", response_model=LoginOut, status_code=status.HTTP_200_OK)
+@app.post(
+    path="/login",
+    response_model=LoginOut,
+    status_code=status.HTTP_200_OK,
+    tags=["People"],
+)
 def login(username: str = Form(...), password: str = Form(...)) -> Dict[str, any]:
     return LoginOut(username=username)
 
 
 # Cookies and Headers Parameters
-@app.post(path="/contact", status_code=status.HTTP_200_OK)
+@app.post(path="/contact", status_code=status.HTTP_200_OK, tags=["Contacts"])
 def contact(
     first_name: str = Form(..., min_length=1, max_length=20),
     last_name: str = Form(..., min_length=1, max_length=20),
@@ -138,7 +150,7 @@ def contact(
 
 
 # Files
-@app.post(path="/post-image")
+@app.post(path="/post-image", tags=["Files"])
 def post_image(image: UploadFile = File(...)) -> Dict[str, any]:
     return {
         "Filename": image.filename,
