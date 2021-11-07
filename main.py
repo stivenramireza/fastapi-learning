@@ -27,6 +27,7 @@ class Person(BaseModel):
     age: int = Field(..., gt=0, le=115, example=23)
     hair_color: Optional[HairColor] = Field(default=None, example="BLACK")
     is_married: Optional[bool] = Field(default=None, example=False)
+    password: str = Field(..., min_length=8)
 
 
 class Location(BaseModel):
@@ -41,7 +42,7 @@ def home() -> Dict[str, any]:
 
 
 # Request and Response Body
-@app.post("/person/new")
+@app.post("/person/new", response_model=Person, response_model_exclude={"password"})
 def create_person(person: Person = Body(...)) -> Dict[str, any]:
     return person
 
