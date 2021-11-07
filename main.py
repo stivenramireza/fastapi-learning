@@ -6,7 +6,7 @@ from enum import Enum
 from pydantic import BaseModel, Field
 
 # FastAPI
-from fastapi import FastAPI, Body, Query, Path
+from fastapi import FastAPI, Body, Query, Path, status
 
 
 app = FastAPI()
@@ -43,19 +43,21 @@ class Location(PersonBase):
     country: str = Field(..., min_length=1, max_length=50, example="Colombia")
 
 
-@app.get("/")
+@app.get(path="/", status_code=status.HTTP_200_OK)
 def home() -> Dict[str, any]:
     return {"Hello": "World"}
 
 
 # Request and Response Body
-@app.post("/person/new", response_model=Person, response_model_exclude={"password"})
+@app.post(
+    path="/person/new", response_model=PersonOut, status_code=status.HTTP_201_CREATED
+)
 def create_person(person: Person = Body(...)) -> Dict[str, any]:
     return person
 
 
 # Validations: Query Parameters
-@app.get("/person/detail")
+@app.get("/person/detail", status_code=status.HTTP_200_OK)
 def show_person(
     name: Optional[str] = Query(
         default=None,
@@ -76,7 +78,7 @@ def show_person(
 
 
 # Validations: Path Parameters
-@app.get("/person/detail/{person_id}")
+@app.get("/person/detail/{person_id}", status_code=status.HTTP_200_OK)
 def show_person(
     person_id: int = Path(
         ...,
@@ -90,7 +92,7 @@ def show_person(
 
 
 # Validations: Request Body
-@app.put("/person/{person_id}")
+@app.put("/person/{person_id}", status_code=status.HTTP_204_NO_CONTENT)
 def update_person(
     person_id: int = Path(
         ..., title="Person id", description="This is the person id", gt=0, example=123
