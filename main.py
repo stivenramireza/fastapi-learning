@@ -6,7 +6,9 @@ from enum import Enum
 from pydantic import BaseModel, Field
 
 # FastAPI
-from fastapi import FastAPI, Body, Query, Path, status
+from fastapi import FastAPI
+from fastapi import Body, Query, Path, Form
+from fastapi import status
 
 
 app = FastAPI()
@@ -43,6 +45,11 @@ class Location(PersonBase):
     country: str = Field(..., min_length=1, max_length=50, example="Colombia")
 
 
+class LoginOut(BaseModel):
+    username: str = Field(..., max_length=20, example="stivenramireza")
+    message: str = Field(default="Login successfully!")
+
+
 @app.get(path="/", status_code=status.HTTP_200_OK)
 def home() -> Dict[str, any]:
     return {"Hello": "World"}
@@ -57,7 +64,7 @@ def create_person(person: Person = Body(...)) -> Dict[str, any]:
 
 
 # Validations: Query Parameters
-@app.get("/person/detail", status_code=status.HTTP_200_OK)
+@app.get(path="/person/detail", status_code=status.HTTP_200_OK)
 def show_person(
     name: Optional[str] = Query(
         default=None,
@@ -78,7 +85,7 @@ def show_person(
 
 
 # Validations: Path Parameters
-@app.get("/person/detail/{person_id}", status_code=status.HTTP_200_OK)
+@app.get(path="/person/detail/{person_id}", status_code=status.HTTP_200_OK)
 def show_person(
     person_id: int = Path(
         ...,
@@ -92,12 +99,17 @@ def show_person(
 
 
 # Validations: Request Body
-@app.put("/person/{person_id}", status_code=status.HTTP_204_NO_CONTENT)
+@app.put(path="/person/{person_id}", status_code=status.HTTP_204_NO_CONTENT)
 def update_person(
     person_id: int = Path(
         ..., title="Person id", description="This is the person id", gt=0, example=123
     ),
     person: Person = Body(...),
     location: Location = Body(...),
-):
+) -> Dict[str, any]:
     return {**dict(person), **dict(location)}
+
+
+@app.post(path="/login", response_model=LoginOut, status_code=status.HTTP_200_OK)
+def login(username: str = Form(...), password: str = Form(...)) -> Dict[str, any]:
+    return LoginOut(username=username)
